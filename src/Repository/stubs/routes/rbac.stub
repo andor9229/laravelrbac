@@ -1,0 +1,32 @@
+<?php
+Route::group(['prefix' => 'manage/users', 'as' => 'rbac.' , 'namespace' => 'Rbac', 'middleware' => ['auth']], function() {
+    Route::get('/', 'UserController@viewAll')->name('index');
+
+    Route::group(['prefix' => 'user', 'as' => 'user.'], function() {
+        Route::get('/new', 'UserController@create')->name('new');
+        Route::get('/restore/{id}', 'UserController@restore')->name('restore');
+        Route::get('/view-all', 'UserController@viewAll')->name('view-all');
+        Route::get('{user}/edit', 'UserController@edit')->name('edit');
+        Route::get('/trash', 'UserController@trash')->name('trash');
+        Route::post('/', 'UserController@store')->name('store');
+        Route::patch('/{user}', 'UserController@update')->name('update');
+        Route::delete('/{id}', 'UserController@delete')->name('delete');
+        Route::delete('/{id}/destroy', 'UserController@destroy')->name('destroy');
+    });
+
+    Route::group(['prefix' => 'role', 'as' => 'role.'], function() {
+        Route::get('/new', 'RoleController@create')->name('new');
+        Route::get('/restore/{id}', 'RoleController@restore')->name('restore');
+        Route::get('/get-all', 'RoleController@getAll')->name('get-all');
+        Route::get('/trash', 'RoleController@trash')->name('trash');
+        Route::get('/{role}/edit', 'RoleController@edit')->name('edit');
+        Route::post('/', 'RoleController@store')->name('store');
+        Route::patch('/{role}', 'RoleController@update')->name('update');
+        Route::delete('/{id}', 'RoleController@delete')->name('delete');
+        Route::delete('/{id}/destroy', 'RoleController@destroy')->name('destroy');
+    });
+
+    Route::group(['prefix' => 'permission', 'as' => 'permission.'], function() {
+        Route::get('/get-all', 'PermissionController@getAll')->name('get-all');
+    });
+});

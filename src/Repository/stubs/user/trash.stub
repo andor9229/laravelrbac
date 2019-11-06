@@ -1,0 +1,42 @@
+@extends('layouts.app')
+
+@section('content')
+    <card>
+        <div class="d-flex justify-content-between">
+            <h1 class="text-capitalize">Cestino</h1>
+            <form action="{{ route('rbac.index') }}" method="GET">
+                <button class="btn btn-success my-auto"><i class="fas fa-users"></i>&nbsp;&nbsp;Utenti</button>
+            </form>
+        </div>
+        <table class="table table-striped">
+            <thead>
+            <tr class="text-capitalize">
+                <th scope="col">#</th>
+                <th scope="col">Azioni</th>
+                <th scope="col">Nome</th>
+                <th scope="col">Email</th>
+                <th scope="col">Ruoli</th>
+                <th scope="col">Creato il</th>
+                <th scope="col">Aggiornato il</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach($users as $user)
+                <tr>
+                    <th scope="row">{{ $user->id }}</th>
+                    <th scope="row">
+                        <a href="{{ route('rbac.user.restore', $user) }}" data-toggle="tooltip" data-placement="top" title="Ripristina">
+                            <i class="fas fa-redo-alt"></i></a>&nbsp;&nbsp;
+                        <delete placeholder="Inserisci l'email dell'utente da eliminare" namespace="/manage/users/user" name_model="user" data-toggle="tooltip" data-placement="top" title="Elimina" link_text="Elimina" match="{{ $user->email }}" id_model="{{ $user->id }}" :destroy="true"></delete>
+                    </th>
+                    <td>{{ $user->name }}</td>
+                    <td>{{ $user->email }}</td>
+                    <td>{{ implode(', ', $user->roles->pluck('name')->toArray()) }}</td>
+                    <td>{{ $user->created_at }}</td>
+                    <td>{{ $user->updated_at }}</td>
+                </tr>
+            @endforeach
+            </tbody>
+        </table>
+    </card>
+@endsection

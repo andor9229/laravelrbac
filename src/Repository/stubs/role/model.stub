@@ -1,0 +1,43 @@
+<?php
+
+namespace App\Models\Rbac\Role;
+
+use App\Models\Rbac\Permission\Permission;
+use App\Models\Rbac\User\User;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+class Role extends Model
+{
+    use SoftDeletes;
+
+    protected $fillable = [
+        'name'
+    ];
+
+    public function hasPermissions($permissions = NULL)
+    {
+        $permission_roles = $this->permissions->pluck('slug')->toArray();
+        if(is_null($permissions)) {
+            return !! count($permission_roles);
+        }
+
+        foreach ($permissions as $permission) {
+            if(in_array($permission, $permission_roles)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class);
+    }
+
+    public function permissions()
+    {
+        return $this->belongsToMany(Permission::class);
+    }
+}

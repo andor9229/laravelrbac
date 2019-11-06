@@ -1,0 +1,151 @@
+<?php
+
+namespace App\Http\Controllers\Rbac;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\User\UserRequest;
+use App\Models\Rbac\Permission\Permission;
+use App\Models\Rbac\Role\Role;
+use App\Models\Rbac\User\User;
+use Illuminate\Http\Response;
+use Illuminate\Routing\Redirector;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+use Illuminate\View\View;
+
+class UserController extends Controller
+{
+    protected $redirectTo = '/manage/users';
+
+    public function create()
+    {
+        return view('auth.register');
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \App\Http\Requests\User\UserRequest $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(UserRequest $request)
+    {
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make('password'),
+            'api_token' => Str::random(60),
+            'company_id' => $request->has('company') ? $request->company : null,
+        ]);
+
+        if($request->has('role')) {
+            $user->roles()->attach($request->role);
+        }
+
+        return redirect($this->redirectTo)
+            ->with([
+                'status' =>  'Utente registrato correttamente!',
+                'type' => 'success'
+            ]);
+
+    }
+
+    /**
+     * Get a edit page.
+     *
+     * @param  User $user
+     * @return View
+     */
+    public function edit(User $user)
+    {
+        $roles = Role::all();
+        return view('pages.rbac.user.edit', compact('user', 'roles'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Requests\UserRequest   $request
+     * @param  User  $user
+     * @return Response | Redirector
+     */
+    public function update(UserRequest $request, User $user)
+    {
+        if(auth()->user()->can('manage', $user) && $request->has('role')) {
+            $user->roles()->detach();
+            $user->roles()->attach($request->role);
+            $user->updated_at = now()->toDateTimeString();
+            $user->save();
+
+            return redirect($this->redirectTo)
+                ->with([
+                    'status' =>  'Utente aggiornato correttamente!',
+                    'type' => 'success'
+                ]);
+        }
+
+        if(auth()->user()->can('update', $user)) {
+            $user->name = $request->name;
+            $user->save();
+            return redirect($this->redirectTo)
+                ->with([
+                    'status' =>  'Utente aggiornato correttamente',
+                    'type' => 'success'
+                ]);
+        }
+
+        return response('', 403);
+    }
+
+    public function delete($id)
+    {
+        $user = User::find($id);
+        $user->delete();
+
+        return redirect($this->redirectTo)
+            ->with([
+                'status' => 'Utente eliminato correttamente',
+                'type' => 'success'
+            ]);
+    }
+
+    public function destroy($id)
+    {
+        $user = User::withTrashed()->find($id);
+        $user->forceDelete();
+
+        return redirect($this->redirectTo)
+            ->with([
+                'status' =>  'Utente eliminato correttamente',
+                'type' => 'success'
+            ]);
+    }
+
+    public function restore($id)
+    {
+        $user = User::withTrashed()->find($id);
+        $user->restore();
+
+        return redirect($this->redirectTo)
+            ->with([
+                'status' =>  'Utente ripristinato correttamente',
+                'type' => 'success'
+            ]);
+    }
+
+    public function viewAll(User $user)
+    {
+        $users = User::all();
+        $roles = Role::all();
+        $permissions = Permission::all();
+        return view('pages.rbac.index', compact('users', 'roles', 'permissions'));
+    }
+
+    public function trash()
+    {
+        $users = User::onlyTrashed()->get();
+        return view('pages.rbac.user.trash', compact('users'));
+    }
+
+}

@@ -1,0 +1,82 @@
+<div class="d-flex justify-content-between">
+    <h1 class="text-capitalize">Ruoli</h1>
+    <div>
+        <form action="{{ route('rbac.role.trash') }}" method="GET" class="d-inline">
+            <button class="btn btn-secondary my-auto"><font-awesome-icon icon="trash"></font-awesome-icon>&nbsp;&nbsp;Cestino</button>
+        </form>
+        <form action="{{ route('rbac.role.new') }}" method="GET" class="d-inline">
+            <button class="btn btn-primary my-auto"><font-awesome-icon icon="plus"></font-awesome-icon>&nbsp;&nbsp;Crea Ruolo</button>
+        </form>
+    </div>
+
+</div>
+<table class="table table-striped">
+    <thead>
+    <tr class="text-capitalize">
+        <th scope="col">#</th>
+        <th scope="col">Azioni</th>
+        <th scope="col">Nome</th>
+        <th scope="col">Permessi</th>
+        <th scope="col">Creato Il</th>
+        <th scope="col">Aggiornato Il</th>
+    </tr>
+    </thead>
+    <tbody>
+    @forelse($roles as $role)
+        <tr>
+            <th scope="row">{{ $role->id }}</th>
+            <th scope="row" class="">
+                <a href="{{ route('rbac.role.edit', $role) }}" data-toggle="tooltip" data-placement="top" title="Modifica">
+                    <font-awesome-icon icon="edit"/></a>&nbsp;&nbsp;
+                <delete
+                        placeholder="Inserisci il nome del ruolo da cancellare"
+                        namespace="/rbac/role"
+                        title_modal="il ruolo con nome"
+                        data-toggle="tooltip" data-placement="top"
+                        title="Elimina"
+                        link_text="Elimina"
+                        match="{{ $role->name }}"
+                        id_model="{{ $role->id }}"
+                ></delete>
+            </th>
+            <td>{{ $role->name }}</td>
+            <td>
+                @if($role->hasPermissions())
+                    <show-permissions
+                            name="{{ $role->name }}"
+                            data="{{ json_encode($role->permissions->pluck('slug')->toArray()) }}"
+                            text="Mostra Permessi"
+                    ></show-permissions>
+                @else
+                    Nessun Permesso
+                @endif
+            </td>
+            <td>{{ $role->created_at }}</td>
+            <td>{{ $role->updated_at }}</td>
+        </tr>
+    @empty
+
+    @endforelse
+    </tbody>
+</table>
+
+<div id="permissions" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Modal body text goes here.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary">Save changes</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+

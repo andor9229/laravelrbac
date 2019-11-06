@@ -1,0 +1,112 @@
+<?php
+
+namespace App\Http\Controllers\Rbac;
+
+use App\Http\Controllers\Controller;
+use App\Models\Rbac\Permission\Permission;
+use App\Models\Rbac\Role\Role;
+use App\Models\Rbac\User\User;
+use App\Http\Requests\Role\RoleRequest;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+
+class RoleController extends Controller
+{
+    protected $redirectTo = '/manage/users';
+
+    public function getAll()
+    {
+        return response()->json(Role::all());
+    }
+
+    public function store(RoleRequest $request)
+    {
+        $role = Role::create([
+            'name' => Str::lower($request->name)
+        ]);
+
+        if($request->has('permission')) {
+            $role->permissions()->attach($request->permission);
+        }
+
+        return redirect($this->redirectTo)
+            ->with([
+                'status' =>  'Ruolo registrato correttamente!',
+                'type' => 'success'
+            ]);
+    }
+
+    public function create()
+    {
+        return view('pages.rbac.role.create');
+    }
+
+    public function edit(Role $role)
+    {
+        return view('pages.rbac.role.edit', compact('role'));
+    }
+
+    public function update(RoleRequest $request, Role $role)
+    {
+        if($request->has('name')) {
+            $role->name = $request->name;
+            $role->save();
+        }
+
+        $role->permissions()->detach();
+        $role->permissions()->attach($request->permission);
+
+        return redirect($this->redirectTo)
+            ->with([
+                'status' =>  'Ruolo aggiornato correttamente!',
+                'type' => 'success'
+            ]);
+    }
+
+    public function trash()
+    {
+        $roles = Role::onlyTrashed()->get();
+
+        return view('pages.rbac.role.trash', compact('roles'));
+    }
+
+    public function delete($id)
+    {
+        $role = Role::find($id);
+
+        $role->delete();
+
+        return redirect('/manage/users')
+            ->with([
+                'status' =>  'Ruolo eliminato correttamente',
+                'type' => 'success'
+            ]);
+    }
+
+    public function destroy($id)
+    {
+        $role = Role::withTrashed()->find($id);
+
+        $role->forceDelete();
+
+        return redirect('/manage/users')
+            ->with([
+                'status' =>  'Ruolo eliminato correttamente!',
+                'type' => 'success'
+            ]);
+    }
+
+    public function restore($id)
+    {
+        $role = Role::withTrashed()->find($id);
+
+        $role->restore();
+
+        return redirect('/manage/users')
+            ->with([
+                'status' =>  'Ruolo ripristinato correttamente',
+                'type' => 'success'
+            ]);
+    }
+}

@@ -1,0 +1,31 @@
+<h1 class="text-capitalize text-left">Permessi</h1>
+<table class="table table-striped">
+    <thead>
+    <tr class="text-capitalize">
+        <th scope="col">#</th>
+        <th scope="col">Controller</th>
+        <th scope="col">Azione</th>
+        <th scope="col">Slug</th>
+        <th scope="col">Creato Il</th>
+        <th scope="col">Aggiornato Il</th>
+    </tr>
+    </thead>
+    <tbody>
+    @forelse($permissions as $permission)
+        <tr>
+            <th scope="row">{{ $permission->id }}</th>
+            <td>{{ $permission->controller }}</td>
+            <td>{{ $permission->action }}</td>
+            <td>{{ $permission->slug }}</td>
+            <td>{{ $permission->created_at }}</td>
+            <td>{{ $permission->updated_at }}</td>
+        </tr>
+    @empty
+        <tr>
+            <th colspan="6" class="text-center">
+                <h3> Non ci sono permessi</h3>
+            </th>
+        </tr>
+    @endforelse
+    </tbody>
+</table>

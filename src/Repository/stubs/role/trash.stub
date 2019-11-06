@@ -1,0 +1,40 @@
+@extends('layouts.app')
+
+@section('content')
+    <card>
+        <div class="d-flex justify-content-between">
+            <h1 class="text-capitalize">Cestino Ruoli</h1>
+            <form action="{{ route('manage-users.index') }}" method="GET">
+                <button class="btn btn-success my-auto"><font-awesome-icon icon="users"></font-awesome-icon>&nbsp;&nbsp;Ruoli</button>
+            </form>
+        </div>
+        <table class="table table-striped">
+            <thead>
+            <tr class="text-capitalize">
+                <th scope="col">#</th>
+                <th scope="col">Azioni</th>
+                <th scope="col">Name</th>
+                <th scope="col">Permission</th>
+                <th scope="col">Create il</th>
+                <th scope="col">Aggiornato il</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach($roles as $role)
+                <tr>
+                    <th scope="row">{{ $role->id }}</th>
+                    <th scope="row">
+                        <a href="{{ route('manage-users.role.restore', $role) }}" data-toggle="tooltip" data-placement="top" title="Ripristina">
+                            <font-awesome-icon icon="redo-alt"/></a>&nbsp;&nbsp;
+                        <delete placeholder="Inserisci il nome del ruolo da eliminare" name_model="role" data-toggle="tooltip" data-placement="top" title="Elimina" link_text="Elimina" match="{{ $role->name }}" id_model="{{ $role->id }}" :destroy="true"></delete>
+                    </th>
+                    <td>{{ $role->name }}</td>
+                    <td>{{ implode(', ', $role->permissions->pluck('slug')->toArray()) }}</td>
+                    <td>{{ $role->created_at }}</td>
+                    <td>{{ $role->updated_at }}</td>
+                </tr>
+            @endforeach
+            </tbody>
+        </table>
+    </card>
+@endsection

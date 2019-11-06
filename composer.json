@@ -1,0 +1,18 @@
+{
+    "name": "andor9229/laravelrbac",
+    "description": "Rbac for Laravel",
+    "authors": [
+        {
+            "name": "Andrea Ortu",
+            "email": "andrea.ortu.9229@gmail.com"
+        }
+    ],
+    "license": "MIT",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Andor9229\\Rbac\\": "src/"
+        }
+    }
+}
+

@@ -1,0 +1,57 @@
+
+<div class="d-flex justify-content-between">
+    <h1 class="text-capitalize">Utenti</h1>
+    <div>
+        <form action="{{ route('rbac.user.trash') }}" method="GET" class="d-inline">
+            <button class="btn btn-secondary my-auto"><i class="fas fa-trash"></i>&nbsp;&nbsp;Cestino</button>
+        </form>
+        <form action="{{ route('rbac.user.new') }}" method="GET" class="d-inline">
+            <button class="btn btn-primary my-auto"><i class="fas fa-plus"></i>&nbsp;&nbsp;Crea Utente</button>
+        </form>
+    </div>
+
+</div>
+<table class="table table-striped">
+    <thead>
+        <tr class="text-capitalize">
+            <th scope="col">#</th>
+            <th scope="col">Azioni</th>
+            <th scope="col">Nome</th>
+            <th scope="col">Email</th>
+            <th scope="col">Ruolo</th>
+            <th scope="col">Api Token</th>
+            <th scope="col">Azienda</th>
+            <th scope="col">Creato il</th>
+            <th scope="col">Aggiornato il</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach($users as $user)
+        <tr>
+            <th scope="row">{{ $user->id }}</th>
+            <th scope="row" class="">
+                <a href="{{ route('rbac.user.edit', $user) }}" data-toggle="tooltip" data-placement="top" title="Aggiorna">
+                    <i class="fas fa-edit"></i></a>&nbsp;&nbsp;
+                <delete
+                        placeholder="Inserisci l'email dell'utente da cancellare"
+                        namespace="/manage/users/user"
+                        title_modal="l'utente con email"
+                        data-toggle="tooltip"
+                        data-placement="top"
+                        title="Cancella"
+                        link_text="Cancella"
+                        match="{{ $user->email }}"
+                        id_model="{{ $user->id }}"
+                ></delete>
+            </th>
+            <td>{{ $user->name }}</td>
+            <td>{{ $user->email }}</td>
+            <td>{{ implode(', ', $user->roles->pluck('name')->toArray()) }}</td>
+            <td>{{ $user->api_token ?? '-'}}</td>
+            <td>{{ $user->companies->name ?? '-'}}</td>
+            <td>{{ $user->created_at }}</td>
+            <td>{{ $user->updated_at }}</td>
+        </tr>
+    @endforeach
+    </tbody>
+</table>

@@ -1,0 +1,25 @@
+<?php
+
+namespace App\Models\Rbac\Permission;
+
+use App\Models\Rbac\Role\Role;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Schema;
+
+class Permission extends Model
+{
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class);
+    }
+
+    public function getRolesName()
+    {
+        return $this->roles->pluck('name')->toArray();
+    }
+
+    public function getColumns()
+    {
+        return Schema::getColumnListing($this->table);
+    }
+}

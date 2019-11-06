@@ -1,0 +1,47 @@
+<?php
+
+
+namespace App\Http\Controllers\Rbac;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Account\AccountRequest;
+
+class AccountController extends Controller
+{
+    protected $redirectTo = '/manage/users';
+
+    /**
+     * Get a edit page.
+     *
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     * @return \Illuminate\Http\Response
+     */
+    public function edit()
+    {
+        $user = auth()->user();
+
+        return view('pages.rbac.account.index', compact('user'));
+    }
+
+    public function save(AccountRequest $request)
+    {
+        $user = auth()->user();
+
+        $user->name = $request->input('name');
+        $user->email = $request->input('email');
+
+        if($request->input('password')) {
+            $user->password = bcrypt($request->input('password'));
+            $user->password_updated_at = now();
+        }
+
+        $user->save();
+
+        return redirect(config('chameleon.home'))
+            ->with([
+                'status' =>  'Account aggiornato correttamente!',
+                'type' => 'success'
+            ]);
+
+    }
+}

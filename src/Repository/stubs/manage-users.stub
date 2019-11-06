@@ -1,0 +1,40 @@
+@extends('layouts.app')
+
+@section('content')
+    <ul class="nav nav-tabs text-capitalize" id="myTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="users-tab" data-toggle="tab" href="#users-table" role="tab" aria-controls="users" aria-selected="true">
+                    Utenti
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="roles-tab" data-toggle="tab" href="#roles-table" role="tab" aria-controls="roles" aria-selected="false">
+                    Ruoli
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="permissions-tab" data-toggle="tab" href="#permissions-table" role="tab" aria-controls="permissions" aria-selected="false">
+                    Permessi
+                </a>
+            </li>
+        </ul>
+
+    <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active py-3" id="users-table" role="tabpanel" aria-labelledby="users-tab">
+            <card>
+                @include('pages.rbac.user.index')
+            </card>
+
+        </div>
+        <div class="tab-pane fade py-3" id="roles-table" role="tabpanel" aria-labelledby="roles-tab">
+            <card>
+                @include('pages.rbac.role.index')
+            </card>
+        </div>
+        <div class="tab-pane fade py-3" id="permissions-table" role="tabpanel" aria-labelledby="permissions-tab">
+            <card>
+                @include('pages.rbac.permission.index')
+            </card>
+        </div>
+    </div>
+@endsection
